@@ -35,18 +35,19 @@ def metadata(sample):
     sampleid = sample.split("_")[1]
     return jsonify(model.get_sample(sampleid))
     
-
 @app.route('/wfreq/<sample>')
-def wfreq():
+def wfreq(sample):
     """Weekly Washing Frequency as a number.
 
     Args: Sample in the format: `BB_940`
 
     Returns an integer value for the weekly washing frequency `WFREQ`
     """
+    sampleid = sample.split("_")[1]
+    return jsonify(model.get_freq(sampleid))
 
 @app.route('/samples/<sample>')
-def samps():   
+def samps(sample):   
     """OTU IDs and Sample Values for a given sample.
 
     Sort your Pandas DataFrame (OTU ID and Sample Value)

@@ -26,3 +26,10 @@ class Model(object):
         row = result[0].__dict__
         row.pop('_sa_instance_state', None)
         return row
+
+    def get_freq(self, sampleid):
+        result = self.session.query(self.samples_metadata.WFREQ).filter(self.samples_metadata.SAMPLEID == int(sampleid))
+        return result[0]
+
+    def get_otuID_and_values(self, sampleid):
+            
