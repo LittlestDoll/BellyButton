@@ -13,6 +13,16 @@ class Model(object):
         self.otu, self.samples, self.samples_metadata = self.Base.classes.otu, self.Base.classes.samples, self.Base.classes.samples_metadata
         self.session = Session(self.engine)
 
+    def get_names(self):
+        result = self.session.query(self.samples_metadata.SAMPLEID) 
+        return [ "BB_"+str(id[0]) for id in result ]  
+
     def get_otu_list(self):
         result = self.session.query(self.otu.lowest_taxonomic_unit_found)
         return [ otu[0] for otu in result ]
+
+    def get_sample(self, sampleid):
+        result = self.session.query(self.samples_metadata).filter(self.samples_metadata.SAMPLEID == int(sampleid))
+        row = result[0].__dict__
+        row.pop('_sa_instance_state', None)
+        return row

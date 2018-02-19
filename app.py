@@ -14,6 +14,8 @@ def names():
     """List of sample names.
     Returns a list of sample names
     """
+    names = model.get_names()
+    return jsonify(names)
 
 @app.route('/otu')
 def otu():
@@ -24,12 +26,15 @@ def otu():
     return jsonify(otus)
 
 @app.route('/metadata/<sample>')
-def metadata():
+def metadata(sample):
     """MetaData for a given sample - as a dict
     Args: Sample in the format: `BB_940`
 
     Returns a json dictionary of sample metadata
     """
+    sampleid = sample.split("_")[1]
+    return jsonify(model.get_sample(sampleid))
+    
 
 @app.route('/wfreq/<sample>')
 def wfreq():
