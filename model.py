@@ -18,8 +18,8 @@ class Model(object):
         return [ "BB_"+str(id[0]) for id in result ]  
 
     def get_otu_list(self):
-        result = self.session.query(self.otu.lowest_taxonomic_unit_found)
-        return [ otu[0] for otu in result ]
+        result = self.session.query(self.otu.otu_id, self.otu.lowest_taxonomic_unit_found)
+        return { otu[0]:otu[1] for otu in result }
 
     def get_sample(self, sampleid):
         result = self.session.query(self.samples_metadata).filter(self.samples_metadata.SAMPLEID == int(sampleid))
@@ -31,5 +31,12 @@ class Model(object):
         result = self.session.query(self.samples_metadata.WFREQ).filter(self.samples_metadata.SAMPLEID == int(sampleid))
         return result[0]
 
-    def get_otuID_and_values(self, sampleid):
+    def get_otuID_and_values(self, sample):
+        response = {'otu_ids':[], 'sample_values': []}
+        results = self.engine.execute('SELECT otu_id, %s FROM samples ORDER BY %s DESC' % (sample, sample))
+        for result in results:
+            response['otu_ids'].append(result[0])
+            response['sample_values'].append(result[1])
+        return response    
+
             

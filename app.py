@@ -9,6 +9,10 @@ def home():
     """Return the dashboard homepage."""
     return render_template('index.html')
 
+@app.route('/app.js')
+def appjs():
+    return app.send_static_file('app.js')
+
 @app.route('/names')
 def names():
     """List of sample names.
@@ -50,29 +54,9 @@ def wfreq(sample):
 def samps(sample):   
     """OTU IDs and Sample Values for a given sample.
 
-    Sort your Pandas DataFrame (OTU ID and Sample Value)
-    in Descending Order by Sample Value
-
-    Return a list of dictionaries containing sorted lists  for `otu_ids`
-    and `sample_values`
-
-    [
-        {
-            otu_ids: [
-                1166,
-                2858,
-                481,
-                ...
-            ],
-            sample_values: [
-                163,
-                126,
-                113,
-                ...
-            ]
-        }
-    ]
-    """             
+    Sorted in descending order.
+    """  
+    return jsonify(model.get_otuID_and_values(sample))           
 
 if __name__ == "__main__":
     app.run(debug=True)
