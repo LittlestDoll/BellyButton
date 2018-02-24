@@ -5,7 +5,7 @@ var samples_base_url = 'http://127.0.0.1:5000/samples/';
 
 $.getJSON( names_url, function( data ) {
     $.each( data, function( index, name ) {
-        $("#selDataset").append("<option value='" + name +"'>" + name + "</option>")
+        $("#selDataset").append("<option value='" + name +"'>" + name + "</option>");
     });
   });
 
@@ -22,6 +22,12 @@ var otu = (function () {
     });
     return json;
 })();
+
+function onLoad() {
+    optionChanged($("#selDataset").val());
+}
+
+window.onload = onLoad;
 
 function optionChanged(sampleid) {
     var metadata = (function () {
@@ -69,6 +75,17 @@ function optionChanged(sampleid) {
         sample_values.push(samples.sample_values[i]);
     }
     buildPieChart(otu_ids, sample_values);
+
+    otu_ids = [];
+    sample_values = [];
+    for (i=0; i < samples.sample_values.length; i++) {
+        if (samples.sample_values[i] == 0) {
+            break;
+        }
+        otu_ids.push(samples.otu_ids[i]);
+        sample_values.push(samples.sample_values[i]);
+    }
+    buildBubbleChart(otu_ids, sample_values);
 }
 
 function buildPieChart(otu_ids, sample_values) {
@@ -96,29 +113,35 @@ function buildPieChart(otu_ids, sample_values) {
 };
 
 //Does it make more sense to make data variables before plugging data into chart values?
-function buildBubbleChart() {
-    Plotly.d3.json(samples_base_url, function(error, response) {
-        var trace = {
-            x: samples.otu_ids,
-            y: samples.sample_values,
-            text: otu.lowest_taxonomic_unit_found,
-            mode: 'markers',
-            marker: {
-                color: samples.otu_ids, 
-                size: samples.sample_values
-            },
-            type: 'scatter'
-        };
+function buildBubbleChart(otu_ids, sample_values) {
+    var text = [];
+    for (var i in otu_ids) {
+        text.push(otu[otu_ids[i]]);
+    } 
+    console.log(text);
+    console.log(otu_ids);
+    console.log(sample_values);
+    
+    var trace = {
+        x: otu_ids,
+        y: sample_values,
+        text: text,
+        mode: 'markers',
+        marker: {
+            color: otu_ids, 
+            size: sample_values
+        },
+        type: 'scatter'
+    };
 
-        var data = [trace];
+    var data = [trace];
 
-        var layout = {
-            title: 'Sample Value vs. OTU ID',
-            showlegend: true,
-            height: 600,
-            width: 600
-        };
+    var layout = {
+        title: 'Sample Value vs. OTU ID',
+        showlegend: false,
+        height: 500,
+        width: 900
+    };
 
-        Plotly.newPlot("bubble-chart", data, layout);
-    });    
-};
+    Plotly.newPlot("bubble-chart", data, layout);
+    };    
